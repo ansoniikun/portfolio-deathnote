@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 const AudioVisualizer = () => {
   const canvasRef = useRef(null);
   const audioRef = useRef(null);
+  const audioCtxRef = useRef(null);
   const [isMuted, setIsMuted] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -13,9 +15,11 @@ const AudioVisualizer = () => {
     const audio = new Audio("/music/Low of Solipsism.mp3");
     audioRef.current = audio;
     audio.loop = true;
-    audio.muted = false; // unmuted by default
+    audio.muted = false;
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    audioCtxRef.current = audioCtx;
+
     const analyser = audioCtx.createAnalyser();
     const source = audioCtx.createMediaElementSource(audio);
     source.connect(analyser);
@@ -58,22 +62,28 @@ const AudioVisualizer = () => {
       }
     };
 
-    draw();
+    const onScroll = () => {
+      if (!hasStarted && audioCtxRef.current && audioRef.current) {
+        audioCtxRef.current.resume().then(() => {
+          audioRef.current.play().then(() => {
+            setHasStarted(true);
+            draw();
+          });
+        });
+        window.removeEventListener("scroll", onScroll);
+      }
+    };
 
-    audio
-      .play()
-      .then(() => {
-        console.log("Audio autoplayed unmuted.");
-      })
-      .catch((err) => {
-        console.warn("Autoplay with sound blocked — waiting for interaction.");
-      });
-  }, []);
+    window.addEventListener("scroll", onScroll);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [hasStarted]);
 
   const toggleMute = () => {
     const audio = audioRef.current;
     if (!audio) return;
-
     audio.muted = !audio.muted;
     setIsMuted(audio.muted);
   };
@@ -85,7 +95,7 @@ const AudioVisualizer = () => {
         ref={canvasRef}
         width={100}
         height={60}
-        className="mb-2 bg-transparent cursor-pointer"
+        className="mb-2 cursor-pointer bg-transparent"
         title={isMuted ? "Unmute" : "Mute"}
       />
     </div>
