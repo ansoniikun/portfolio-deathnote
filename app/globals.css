@@ -10,12 +10,14 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --custom-gray: #131313;
   --deathnote: "DeathNote", Arial, sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-custom-gray: var(--custom-gray);
   /* --font-sans: var(
     --font-deathnote
   );  */
@@ -34,4 +36,9 @@ body {
   background: var(--background);
   color: var(--foreground);
   /* font-family: var(--font-deathnote);  */
+}
+
+h1,
+h2 {
+  font-family: var(--font-deathnote);
 }

@@ -6,8 +6,9 @@ import { Environment, OrbitControls } from "@react-three/drei";
 import { DeathNote } from "./DeathNote";
 import { useEffect, useState, useRef } from "react";
 import * as THREE from "three";
+import MyBook from "./MyBook"; // Import your book component
 
-function CameraController() {
+function CameraController({ onTransitionComplete }) {
   const [scrollY, setScrollY] = useState(0);
   const cameraRef = useRef();
 
@@ -58,12 +59,42 @@ function CameraController() {
       endQuaternion,
       easedProgress
     );
+
+    // Notify parent when transition is nearly complete
+    if (easedProgress >= 0.95 && onTransitionComplete) {
+      onTransitionComplete(true);
+    } else if (easedProgress < 0.95 && onTransitionComplete) {
+      onTransitionComplete(false);
+    }
   });
 
   return null;
 }
 
 export default function Hero() {
+  const [show3DBook, setShow3DBook] = useState(true);
+  const [showFlipBook, setShowFlipBook] = useState(false);
+  const [triggerBookOpen, setTriggerBookOpen] = useState(false);
+
+  const handleTransitionComplete = (isComplete) => {
+    if (isComplete && show3DBook) {
+      // Start transition: fade out 3D model, fade in flip book
+      setTimeout(() => {
+        setShow3DBook(false);
+        setShowFlipBook(true);
+        // Trigger book opening after a short delay
+        setTimeout(() => {
+          setTriggerBookOpen(true);
+        }, 500);
+      }, 200);
+    } else if (!isComplete && !show3DBook) {
+      // Reverse transition: show 3D model, hide flip book
+      setShow3DBook(true);
+      setShowFlipBook(false);
+      setTriggerBookOpen(false);
+    }
+  };
+
   return (
     <>
       {/* Fixed Navbar */}
@@ -86,19 +117,32 @@ export default function Hero() {
       </nav>
 
       {/* Fixed 3D Canvas Background */}
-      <div className="fixed top-0 left-0 w-full h-full z-0">
+      <div
+        className={`fixed top-0 left-0 w-full h-full z-10 transition-opacity duration-1000 ${
+          show3DBook ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
         <Canvas
           camera={{ position: [2, 10, 6], fov: 25 }}
           className="w-full h-full"
         >
           <Environment preset="studio" />
-          <CameraController />
+          <CameraController onTransitionComplete={handleTransitionComplete} />
           <DeathNote />
         </Canvas>
       </div>
 
+      {/* Flip Book Container */}
+      <div
+        className={`fixed top-0 left-0 w-full h-full z-20 flex items-center justify-center transition-opacity duration-1000 ${
+          showFlipBook ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <MyBook triggerOpen={triggerBookOpen} />
+      </div>
+
       {/* Invisible Scrollable Content - just for scroll animation */}
-      <div className="relative z-10 pointer-events-none">
+      <div className="relative z-30 pointer-events-none">
         <div className="h-screen"></div>
         <div className="h-screen"></div>
         <div className="h-screen"></div>
