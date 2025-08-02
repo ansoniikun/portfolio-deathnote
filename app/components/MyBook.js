@@ -14,7 +14,7 @@ function MyBook({ triggerOpen }) {
     if (triggerOpen && bookRef.current) {
       // Auto-open the book after it appears
       setTimeout(() => {
-        bookRef.current.flipNext();
+        bookRef.current.pageFlip().flipNext();
       }, 800);
     }
   }, [triggerOpen]);
@@ -39,11 +39,8 @@ function MyBook({ triggerOpen }) {
         showPageCorners={true}
         disableFlipByClick={false}
       >
-        <div
-          className="page bg-transparent relative w-full h-full overflow-hidden"
-          number="1"
-        >
-          <div className="cover absolute inset-0 w-full h-full"></div>
+        <div className="page bg-black relative w-full h-full overflow-hidden text-center">
+          <h1 className="text-7xl pt-8">DEATH NOTE</h1>
         </div>
 
         <div className="page text-white bg-custom-gray font-deathnote relative">
@@ -146,9 +143,9 @@ function MyBook({ triggerOpen }) {
       </HTMLFlipBook>
 
       {/* Navigation hint */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm opacity-75 pointer-events-none">
+      {/* <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm opacity-75 pointer-events-none">
         Click or drag to flip pages
-      </div>
+      </div> */}
     </div>
   );
 }
