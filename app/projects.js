@@ -1,5 +1,23 @@
 const projects = [
   {
+    name: "batOS",
+    description:
+      "A modern, web-based desktop environment inspired by the Batcomputer, featuring interactive 3D visual elements, dynamic windows, widgets, and built-in apps like a terminal, file manager, notepad, media player, and real-time system info. Includes alerts from NASA EONET, USGS, NOAA, and crime-news APIs.",
+    tech: [
+      "Next.js",
+      "React Three Fiber",
+      "Drei",
+      "Three.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "Radix UI",
+      "Framer Motion",
+      "Class Variance Authority",
+    ],
+    link: "https://bat-os.vercel.app/",
+    img: "/projects/batos.png",
+  },
+  {
     name: "Sasgl",
     description:
       "A golfing management system for clubs to track members, scores, events, and rankings. Features role‑based access, real‑time stat syncing, public log system, and multi‑club event association.",
